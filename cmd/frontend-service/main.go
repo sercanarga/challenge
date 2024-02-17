@@ -73,7 +73,7 @@ func main() {
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// routes
-	app.POST("/", routes.BalanceIncrease)
+	app.POST("/", routes.BalanceUpdate)
 
 	if err := app.Run(":" + os.Getenv("APP_PORT")); err != nil {
 		log.Fatal(err)

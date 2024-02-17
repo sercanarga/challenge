@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-// BalanceIncrease
-// @Summary		Increases the balance of the respective currency in a wallet.
+// BalanceUpdate
+// @Summary		Increases or decrease the balance of the respective currency in a wallet.
 // @Accept		json
 // @Produce		json
 // @Param		_		body		models.EventList	true "raw"
 // @Success		200		{object}	models.APIReturn
 // @Failure		400		{object}	models.APIReturn
 // @Router		/		[post]
-func BalanceIncrease(ctx *gin.Context) {
+func BalanceUpdate(ctx *gin.Context) {
 	var req models.EventList
 	if ctx.BindJSON(&req) != nil {
 		ctx.JSON(400, models.APIReturn{
