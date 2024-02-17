@@ -39,7 +39,6 @@ func init() {
 	} else {
 		dsn = os.Getenv("DB_DSN")
 	}
-
 	if err := durable.ConnectDB(dsn); err != nil {
 		log.Fatal("Error connecting to database")
 	}
@@ -73,7 +72,7 @@ func main() {
 	app := gin.Default()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:  []string{"*"},
-		AllowMethods:  []string{"GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"},
+		AllowMethods:  []string{"GET", "POST"},
 		AllowHeaders:  []string{"*"},
 		ExposeHeaders: []string{"*"},
 		MaxAge:        12 * time.Hour,
