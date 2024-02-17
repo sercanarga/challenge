@@ -24,7 +24,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Increases the balance of the respective currency in a wallet.",
+                "summary": "Increases or decrease the balance of the respective currency in a wallet.",
                 "parameters": [
                     {
                         "description": "raw",
@@ -45,6 +45,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIReturn"
                         }

@@ -16,6 +16,7 @@ import (
 // @Param		_		body		models.EventList	true "raw"
 // @Success		200		{object}	models.APIReturn
 // @Failure		400		{object}	models.APIReturn
+// @Failure		500		{object}	models.APIReturn
 // @Router		/		[post]
 func BalanceUpdate(ctx *gin.Context) {
 	var req models.EventList
@@ -59,8 +60,8 @@ func BalanceUpdate(ctx *gin.Context) {
 
 	_, _, err = durable.KafkaConnection().SendMessage(message)
 	if err != nil {
-		ctx.JSON(400, models.APIReturn{
-			StatusCode:   400,
+		ctx.JSON(500, models.APIReturn{
+			StatusCode:   500,
 			Response:     "Failed to send message to Kafka:" + err.Error(),
 			ResponseTime: time.Now().Unix(),
 		})
