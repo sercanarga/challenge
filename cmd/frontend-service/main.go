@@ -3,6 +3,7 @@ package main
 import (
 	"challenge/internal/durable"
 	"flag"
+	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -22,16 +23,14 @@ func init() {
 	}
 
 	// connect to database
-	if err := durable.ConnectDB(&durable.ConnectionInfo{
-		Host:     os.Getenv("DB_HOST"),
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_NAME"),
-		Port:     os.Getenv("DB_PORT"),
-		SSLMode:  os.Getenv("DB_SSLMODE"),
-	}); err != nil {
+	if err := durable.ConnectDB(os.Getenv("DB_DSN")); err != nil {
 		log.Fatal("Error connecting to database")
 	}
 	// durable.Connection()
 
+}
+
+func main() {
+	durable.Connection().AutoMigrate()
+	fmt.Println("Connected to database")
 }
