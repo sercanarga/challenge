@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
-	"log"
 	"time"
 )
 
@@ -44,7 +43,11 @@ func BalanceUpdate(ctx *gin.Context) {
 	// ===== KAFKA ====
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
-		log.Println("Failed to marshal req:", err)
+		ctx.JSON(400, models.APIReturn{
+			StatusCode:   400,
+			Response:     "Failed to marshal req:" + err.Error(),
+			ResponseTime: time.Now().Unix(),
+		})
 		return
 	}
 	reqString := string(reqBytes)
@@ -56,7 +59,12 @@ func BalanceUpdate(ctx *gin.Context) {
 
 	_, _, err = durable.KafkaConnection().SendMessage(message)
 	if err != nil {
-		log.Println("Failed to send message to Kafka:", err)
+		ctx.JSON(400, models.APIReturn{
+			StatusCode:   400,
+			Response:     "Failed to send message to Kafka:" + err.Error(),
+			ResponseTime: time.Now().Unix(),
+		})
+		return
 	}
 	// ===== KAFKA ====
 
