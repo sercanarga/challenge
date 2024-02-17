@@ -13,5 +13,5 @@ WORKDIR /app
 COPY --from=builder --chown=nonroot:nonroot /app/frontend-service .
 COPY --from=builder --chown=nonroot:nonroot /app/.env .
 
-EXPOSE 8080
+#EXPOSE 8080
 ENTRYPOINT ["./frontend-service"]

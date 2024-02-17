@@ -1,0 +1,7 @@
+basePath: /
+info:
+  contact: {}
+  description: frontend service
+  version: "1.0"
+paths: {}
+swagger: "2.0"

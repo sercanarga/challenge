@@ -13,7 +13,8 @@ services:
       - service-network
     ports:
       - 8080:8080
-#  worker-service:
+    expose:
+      - 8080
 #    build:
 #      context: .
 #      dockerfile: ./cmd/worker-service/Dockerfile
