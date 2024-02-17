@@ -3,6 +3,7 @@ package main
 import (
 	"challenge/docs"
 	"challenge/internal/durable"
+	"challenge/internal/routes"
 	"flag"
 	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/cors"
@@ -71,7 +72,10 @@ func main() {
 	docs.SwaggerInfo.Title = os.Getenv("APP_NAME")
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	if err := app.Run(":8080"); err != nil {
+	// routes
+	app.POST("/", routes.BalanceIncrease)
+
+	if err := app.Run(":" + os.Getenv("APP_PORT")); err != nil {
 		log.Fatal(err)
 	}
 }

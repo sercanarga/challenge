@@ -6,5 +6,111 @@
         "version": "1.0"
     },
     "basePath": "/",
-    "paths": {}
+    "paths": {
+        "/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Increases the balance of the respective currency in a wallet.",
+                "parameters": [
+                    {
+                        "description": "raw",
+                        "name": "_",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EventList"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.APIReturn": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string"
+                },
+                "responseTime": {
+                    "type": "integer"
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Attributes": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Event": {
+            "type": "object",
+            "properties": {
+                "app": {
+                    "type": "string"
+                },
+                "attributes": {
+                    "$ref": "#/definitions/models.Attributes"
+                },
+                "meta": {
+                    "$ref": "#/definitions/models.Meta"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wallet": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EventList": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Event"
+                    }
+                }
+            }
+        },
+        "models.Meta": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

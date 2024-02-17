@@ -1,7 +1,74 @@
 basePath: /
+definitions:
+  models.APIReturn:
+    properties:
+      response:
+        type: string
+      responseTime:
+        type: integer
+      statusCode:
+        type: integer
+    type: object
+  models.Attributes:
+    properties:
+      amount:
+        type: string
+      currency:
+        type: string
+    type: object
+  models.Event:
+    properties:
+      app:
+        type: string
+      attributes:
+        $ref: '#/definitions/models.Attributes'
+      meta:
+        $ref: '#/definitions/models.Meta'
+      time:
+        type: string
+      type:
+        type: string
+      wallet:
+        type: string
+    type: object
+  models.EventList:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+    type: object
+  models.Meta:
+    properties:
+      user:
+        type: string
+    type: object
 info:
   contact: {}
   description: frontend service
   version: "1.0"
-paths: {}
+paths:
+  /:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: raw
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/models.EventList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIReturn'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIReturn'
+      summary: Increases the balance of the respective currency in a wallet.
 swagger: "2.0"
