@@ -1,8 +1,12 @@
 package routes
 
 import (
+	"challenge/internal/durable"
 	"challenge/internal/models"
+	"encoding/json"
+	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
+	"log"
 	"time"
 )
 
@@ -36,6 +40,25 @@ func BalanceUpdate(ctx *gin.Context) {
 			return
 		}
 	}
+
+	// ===== KAFKA ====
+	reqBytes, err := json.Marshal(req)
+	if err != nil {
+		log.Println("Failed to marshal req:", err)
+		return
+	}
+	reqString := string(reqBytes)
+
+	message := &sarama.ProducerMessage{
+		Topic: "balance_updates",
+		Value: sarama.StringEncoder(reqString),
+	}
+
+	_, _, err = durable.KafkaConnection().SendMessage(message)
+	if err != nil {
+		log.Println("Failed to send message to Kafka:", err)
+	}
+	// ===== KAFKA ====
 
 	ctx.JSON(200, models.APIReturn{
 		StatusCode:   200,

@@ -17,10 +17,14 @@ import (
 )
 
 var (
-	debug = flag.Bool("debug", false, "debug mode")
+	dsn         string
+	kafkaBroker string
+	debug       = flag.Bool("debug", false, "debug mode")
 )
 
 func init() {
+	flag.Parse()
+
 	// setup logger
 	durable.SetupLogger()
 
@@ -30,8 +34,25 @@ func init() {
 	}
 
 	// connect to database
-	if err := durable.ConnectDB(os.Getenv("DB_DSN")); err != nil {
+	if *debug {
+		dsn = os.Getenv("DB_DSN_TEST")
+	} else {
+		dsn = os.Getenv("DB_DSN")
+	}
+
+	if err := durable.ConnectDB(dsn); err != nil {
 		log.Fatal("Error connecting to database")
+	}
+
+	// connect to kafka
+	if *debug {
+		kafkaBroker = os.Getenv("KAFKA_BROKER_TEST")
+	} else {
+		kafkaBroker = os.Getenv("KAFKA_BROKER")
+	}
+	err := durable.SetupKafkaProducer(kafkaBroker)
+	if err != nil {
+		log.Fatal("Error connecting to kafka")
 	}
 }
 
@@ -39,8 +60,6 @@ func init() {
 // @description frontend service
 // @BasePath /
 func main() {
-	flag.Parse()
-
 	if err := durable.Connection().AutoMigrate(); err != nil {
 		log.Fatal(err)
 	}

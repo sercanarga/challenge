@@ -1,5 +1,7 @@
 version: '3'
 services:
+
+  # Frontend service
   frontend-service:
     build:
       context: .
@@ -9,24 +11,40 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      kafka:
+        condition: service_started
     networks:
       - service-network
     ports:
       - 8080:8080
     expose:
       - 8080
-#    build:
-#      context: .
-#      dockerfile: ./cmd/worker-service/Dockerfile
-#    deploy:
-#      replicas: 1
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      vault:
-#        condition: service_started
-#    networks:
-#      - service-network
+
+  # Kafka service
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+    networks:
+      - service-network
+    expose:
+      - 9092
+    ports:
+      - 9092:9092
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    networks:
+      - service-network
+    expose:
+      - 2181
+
+  # Postgres service
   postgres:
     image: postgres:latest
     environment:
