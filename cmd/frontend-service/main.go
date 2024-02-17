@@ -17,9 +17,7 @@ import (
 )
 
 var (
-	dsn         string
-	kafkaBroker string
-	debug       = flag.Bool("debug", false, "debug mode")
+	debug = flag.Bool("debug", false, "debug mode")
 )
 
 func init() {
@@ -34,22 +32,12 @@ func init() {
 	}
 
 	// connect to database
-	if *debug {
-		dsn = os.Getenv("DB_DSN_TEST")
-	} else {
-		dsn = os.Getenv("DB_DSN")
-	}
-	if err := durable.ConnectDB(dsn); err != nil {
+	if err := durable.ConnectDB(os.Getenv("DB_DSN")); err != nil {
 		log.Fatal("Error connecting to database")
 	}
 
 	// connect to kafka
-	if *debug {
-		kafkaBroker = os.Getenv("KAFKA_BROKER_TEST")
-	} else {
-		kafkaBroker = os.Getenv("KAFKA_BROKER")
-	}
-	err := durable.SetupKafkaProducer(kafkaBroker)
+	err := durable.SetupKafkaProducer(os.Getenv("KAFKA_BROKER"))
 	if err != nil {
 		log.Fatal("Error connecting to kafka")
 	}
@@ -92,6 +80,7 @@ func main() {
 
 	// routes
 	app.POST("/", routes.BalanceUpdate)
+	app.GET("/", routes.GetWallets)
 
 	if err := app.Run(":" + os.Getenv("APP_PORT")); err != nil {
 		log.Fatal(err)

@@ -6,13 +6,18 @@ import (
 
 var kafkaProducer sarama.SyncProducer
 
+func KafkaConnection() sarama.SyncProducer {
+	return kafkaProducer
+}
+
 func SetupKafkaProducer(broker string) error {
 	if kafkaProducer != nil {
 		return nil
 	}
 
 	config := sarama.NewConfig()
-	config.Consumer.Return.Errors = true
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Retry.Max = 5
 	config.Producer.Return.Successes = true
 
 	var err error
@@ -22,8 +27,4 @@ func SetupKafkaProducer(broker string) error {
 	}
 
 	return nil
-}
-
-func KafkaConnection() sarama.SyncProducer {
-	return kafkaProducer
 }

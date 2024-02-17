@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
+	"os"
 	"time"
 )
 
@@ -41,7 +42,6 @@ func BalanceUpdate(ctx *gin.Context) {
 		}
 	}
 
-	// ===== KAFKA ====
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
 		ctx.JSON(400, models.APIReturn{
@@ -54,7 +54,7 @@ func BalanceUpdate(ctx *gin.Context) {
 	reqString := string(reqBytes)
 
 	message := &sarama.ProducerMessage{
-		Topic: "balance_updates",
+		Topic: os.Getenv("KAFKA_TOPIC"),
 		Value: sarama.StringEncoder(reqString),
 	}
 
@@ -67,10 +67,6 @@ func BalanceUpdate(ctx *gin.Context) {
 		})
 		return
 	}
-	// ===== KAFKA ====
 
-	ctx.JSON(200, models.APIReturn{
-		StatusCode:   200,
-		ResponseTime: time.Now().Unix(),
-	})
+	ctx.Status(200)
 }

@@ -49,6 +49,23 @@ info:
   version: "1.0"
 paths:
   /:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIReturn'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIReturn'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIReturn'
+      summary: Returns a list of wallets.
     post:
       consumes:
       - application/json

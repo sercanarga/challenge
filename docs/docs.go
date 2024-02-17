@@ -17,6 +17,32 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Returns a list of wallets.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIReturn"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
