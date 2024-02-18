@@ -6,9 +6,12 @@ type APIReturn struct {
 	ResponseTime int64
 }
 
+type EventResult struct {
+	StatusCode   int    `json:"statusCode,omitempty"`
+	ErrorDetails string `json:"errorDetails,omitempty"`
+}
+
 type APIEventReturn struct {
-	StatusCode   int
-	Success      []Event
-	Unsuccess    []Event
-	ResponseTime int64
+	Data   Event       `json:"data"`
+	Result EventResult `json:"result"`
 }

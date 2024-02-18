@@ -1,25 +1,19 @@
 package models
 
 type Event struct {
-	App        string     `json:"app"`
-	Type       string     `json:"type"`
-	Time       string     `json:"time"`
-	Meta       Meta       `json:"meta"`
-	Wallet     string     `json:"wallet"`
-	Attributes Attributes `json:"attributes"`
-	Response   Response   `json:"response,omitempty"`
+	App        string          `json:"app"`
+	Type       string          `json:"type"`
+	Time       string          `json:"time"`
+	Meta       EventMeta       `json:"meta"`
+	Wallet     string          `json:"wallet"`
+	Attributes EventAttributes `json:"attributes"`
 }
 
-type Response struct {
-	StatusCode   int    `json:"statusCode,omitempty"`
-	ErrorDetails string `json:"errorDetails,omitempty"`
-}
-
-type Meta struct {
+type EventMeta struct {
 	User string `json:"user"`
 }
 
-type Attributes struct {
+type EventAttributes struct {
 	Amount   string `json:"amount"`
 	Currency string `json:"currency"`
 }

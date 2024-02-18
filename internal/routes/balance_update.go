@@ -17,7 +17,6 @@ import (
 // @Param		_		body		models.EventList	true "raw"
 // @Success		202		{object}	models.APIEventReturn
 // @Success		207		{object}	models.APIEventReturn
-// @Failure		400		{object}	models.APIReturn
 // @Failure		500		{object}	models.APIReturn
 // @Router		/		[post]
 func BalanceUpdate(ctx *gin.Context) {
@@ -33,36 +32,36 @@ func BalanceUpdate(ctx *gin.Context) {
 	}
 
 	messages := make([]*sarama.ProducerMessage, 0)
+	response := make([]models.APIEventReturn, 0)
 
-	for i, event := range req.Events {
+	for _, event := range req.Events {
+		var r = models.APIEventReturn{
+			Data: event,
+		}
+
 		// Validate the request
-		if event.App == "" ||
-			event.Type == "" ||
-			event.Time == "" ||
-			event.Meta.User == "" ||
-			event.Wallet == "" ||
-			event.Attributes.Amount == "" ||
-			event.Attributes.Currency == "" {
-			req.Events[i].Response.StatusCode = 400
-			req.Events[i].Response.ErrorDetails = "Invalid event data"
-			continue
+		if r.Data.App == "" || r.Data.Type == "" || r.Data.Time == "" || r.Data.Meta.User == "" || r.Data.Wallet == "" || r.Data.Attributes.Amount == "" || r.Data.Attributes.Currency == "" {
+			r.Result.StatusCode = 400
+			r.Result.ErrorDetails = "Invalid event data"
+		} else {
+			// Marshal the event
+			eventJson, err := json.Marshal(event)
+			if err != nil {
+				r.Result.StatusCode = 400
+				r.Result.ErrorDetails = "Failed to marshal req:" + err.Error()
+			} else {
+				// Create Kafka message
+				message := &sarama.ProducerMessage{
+					Topic: os.Getenv("KAFKA_TOPIC"),
+					Value: sarama.StringEncoder(eventJson),
+				}
+				messages = append(messages, message)
+
+				r.Result.StatusCode = 202
+			}
 		}
 
-		// Marshal the event
-		eventJson, err := json.Marshal(event)
-		if err != nil {
-			req.Events[i].Response.StatusCode = 400
-			req.Events[i].Response.ErrorDetails = "Failed to marshal req:" + err.Error()
-			continue
-		}
-
-		// Create Kafka message
-		message := &sarama.ProducerMessage{
-			Topic: os.Getenv("KAFKA_TOPIC"),
-			Value: sarama.StringEncoder(eventJson),
-		}
-		messages = append(messages, message)
-		req.Events[i].Response.StatusCode = 202
+		response = append(response, r)
 	}
 
 	// Send messages to Kafka
@@ -77,7 +76,5 @@ func BalanceUpdate(ctx *gin.Context) {
 	}
 
 	// Return the response
-	ctx.JSON(202, models.EventList{
-		Events: req.Events,
-	})
+	ctx.JSON(202, response)
 }
