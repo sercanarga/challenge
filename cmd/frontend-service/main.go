@@ -3,6 +3,7 @@ package main
 import (
 	"challenge/docs"
 	"challenge/internal/durable"
+	"challenge/internal/models"
 	"challenge/internal/routes"
 	"flag"
 	"github.com/Depado/ginprom"
@@ -47,7 +48,10 @@ func init() {
 // @description frontend service
 // @BasePath /
 func main() {
-	if err := durable.Connection().AutoMigrate(); err != nil {
+	if err := durable.Connection().AutoMigrate(
+		&models.Users{},
+		&models.Wallet{},
+	); err != nil {
 		log.Fatal(err)
 	}
 
