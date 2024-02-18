@@ -4,10 +4,8 @@ import (
 	"challenge/internal/durable"
 	"challenge/internal/models"
 	"encoding/json"
-	"errors"
 	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"os"
 	"time"
 )
@@ -17,7 +15,7 @@ import (
 // @Accept		json
 // @Produce		json
 // @Param		_		body		models.EventList	true "raw"
-// @Success		200		{object}	models.APIEventReturn
+// @Success		202		{object}	models.APIEventReturn
 // @Success		207		{object}	models.APIEventReturn
 // @Failure		400		{object}	models.APIReturn
 // @Failure		500		{object}	models.APIReturn
@@ -57,23 +55,28 @@ func BalanceUpdate(ctx *gin.Context) {
 			continue
 		}
 
+		// === Database checks disabled ===
 		// Check if user and wallet exist
-		if _, ok := users[event.Meta.User]; !ok {
-			userResult := durable.Connection().First(&user, "id = ?", event.Meta.User)
-			if errors.Is(userResult.Error, gorm.ErrRecordNotFound) {
-				unsuccessfulEvents = append(unsuccessfulEvents, event)
-				continue
-			}
-			users[event.Meta.User] = user
-		}
-		if _, ok := wallets[event.Wallet]; !ok {
-			walletResult := durable.Connection().First(&wallet, "id = ? AND user_id = ?", event.Wallet, event.Meta.User)
-			if errors.Is(walletResult.Error, gorm.ErrRecordNotFound) {
-				unsuccessfulEvents = append(unsuccessfulEvents, event)
-				continue
-			}
-			wallets[event.Wallet] = wallet
-		}
+		//if _, ok := users[event.Meta.User]; !ok {
+		//	userResult := durable.Connection().First(&user, "id = ?", event.Meta.User)
+		//	if errors.Is(userResult.Error, gorm.ErrRecordNotFound) {
+		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
+		//		continue
+		//	}
+		//	users[event.Meta.User] = user
+		//}
+		//if _, ok := wallets[event.Wallet]; !ok {
+		//	walletResult := durable.Connection().First(&wallet, "id = ? AND user_id = ?", event.Wallet, event.Meta.User)
+		//	if errors.Is(walletResult.Error, gorm.ErrRecordNotFound) {
+		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
+		//		continue
+		//	}
+		//	wallets[event.Wallet] = wallet
+		//}
+
+		users[event.Meta.User] = user
+		wallets[event.Wallet] = wallet
+		// === Database checks disabled ===
 
 		// Marshal the event
 		eventJson, err := json.Marshal(event)
@@ -106,6 +109,7 @@ func BalanceUpdate(ctx *gin.Context) {
 		return
 	}
 
+	// Return the response
 	if len(unsuccessfulEvents) > 0 {
 		ctx.JSON(207, models.APIEventReturn{
 			StatusCode:   207,
@@ -116,8 +120,8 @@ func BalanceUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, models.APIEventReturn{
-		StatusCode:   200,
+	ctx.JSON(202, models.APIEventReturn{
+		StatusCode:   202,
 		Success:      successfulEvents,
 		Unsuccess:    unsuccessfulEvents,
 		ResponseTime: time.Now().Unix(),
