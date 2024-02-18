@@ -15,6 +15,11 @@ import (
 // @Failure		500		{object}	models.APIReturn
 // @Router		/		[get]
 func GetWallets(ctx *gin.Context) {
+	/*
+		@todo: change to use the database to get the wallets.
+			   currently returning the messages from kafka
+	*/
+
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
