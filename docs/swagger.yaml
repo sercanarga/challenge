@@ -1,5 +1,20 @@
 basePath: /
 definitions:
+  models.APIEventReturn:
+    properties:
+      responseTime:
+        type: integer
+      statusCode:
+        type: integer
+      success:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      unsuccess:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+    type: object
   models.APIReturn:
     properties:
       response:
@@ -82,7 +97,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIReturn'
+            $ref: '#/definitions/models.APIEventReturn'
+        "207":
+          description: Multi-Status
+          schema:
+            $ref: '#/definitions/models.APIEventReturn'
         "400":
           description: Bad Request
           schema:

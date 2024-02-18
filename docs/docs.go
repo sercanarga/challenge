@@ -66,7 +66,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.APIReturn"
+                            "$ref": "#/definitions/models.APIEventReturn"
+                        }
+                    },
+                    "207": {
+                        "description": "Multi-Status",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIEventReturn"
                         }
                     },
                     "400": {
@@ -86,6 +92,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.APIEventReturn": {
+            "type": "object",
+            "properties": {
+                "responseTime": {
+                    "type": "integer"
+                },
+                "statusCode": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Event"
+                    }
+                },
+                "unsuccess": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Event"
+                    }
+                }
+            }
+        },
         "models.APIReturn": {
             "type": "object",
             "properties": {
