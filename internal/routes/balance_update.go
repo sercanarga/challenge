@@ -21,7 +21,7 @@ import (
 // @Router		/		[post]
 func BalanceUpdate(ctx *gin.Context) {
 	var req models.EventList
-	if ctx.BindJSON(&req) != nil {
+	if ctx.BindJSON(&req) != nil || req.Events == nil {
 		ctx.JSON(400, models.APIReturn{
 			StatusCode:   400,
 			Response:     "Invalid JSON format",
@@ -42,7 +42,7 @@ func BalanceUpdate(ctx *gin.Context) {
 		}
 	}
 
-	reqBytes, err := json.Marshal(req)
+	reqBytes, err := json.Marshal(req.Events)
 	if err != nil {
 		ctx.JSON(400, models.APIReturn{
 			StatusCode:   400,
@@ -51,11 +51,10 @@ func BalanceUpdate(ctx *gin.Context) {
 		})
 		return
 	}
-	reqString := string(reqBytes)
 
 	message := &sarama.ProducerMessage{
 		Topic: os.Getenv("KAFKA_TOPIC"),
-		Value: sarama.StringEncoder(reqString),
+		Value: sarama.StringEncoder(reqBytes),
 	}
 
 	_, _, err = durable.KafkaConnection().SendMessage(message)
