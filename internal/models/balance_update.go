@@ -7,6 +7,12 @@ type Event struct {
 	Meta       Meta       `json:"meta"`
 	Wallet     string     `json:"wallet"`
 	Attributes Attributes `json:"attributes"`
+	Response   Response   `json:"response,omitempty"`
+}
+
+type Response struct {
+	StatusCode   int    `json:"statusCode,omitempty"`
+	ErrorDetails string `json:"errorDetails,omitempty"`
 }
 
 type Meta struct {

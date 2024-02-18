@@ -32,17 +32,9 @@ func BalanceUpdate(ctx *gin.Context) {
 		return
 	}
 
-	successfulEvents := make([]models.Event, 0)
-	unsuccessfulEvents := make([]models.Event, 0)
-
-	users := make(map[string]models.Users)
-	wallets := make(map[string]models.Wallet)
 	messages := make([]*sarama.ProducerMessage, 0)
 
-	for _, event := range req.Events {
-		var user models.Users
-		var wallet models.Wallet
-
+	for i, event := range req.Events {
 		// Validate the request
 		if event.App == "" ||
 			event.Type == "" ||
@@ -51,39 +43,17 @@ func BalanceUpdate(ctx *gin.Context) {
 			event.Wallet == "" ||
 			event.Attributes.Amount == "" ||
 			event.Attributes.Currency == "" {
-			unsuccessfulEvents = append(unsuccessfulEvents, event)
+			req.Events[i].Response.StatusCode = 400
+			req.Events[i].Response.ErrorDetails = "Invalid event data"
 			continue
 		}
-
-		// === Database checks disabled ===
-		// Check if user and wallet exist
-		//if _, ok := users[event.Meta.User]; !ok {
-		//	userResult := durable.Connection().First(&user, "id = ?", event.Meta.User)
-		//	if errors.Is(userResult.Error, gorm.ErrRecordNotFound) {
-		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
-		//		continue
-		//	}
-		users[event.Meta.User] = user
-		//}
-		//if _, ok := wallets[event.Wallet]; !ok {
-		//	walletResult := durable.Connection().First(&wallet, "id = ? AND user_id = ?", event.Wallet, event.Meta.User)
-		//	if errors.Is(walletResult.Error, gorm.ErrRecordNotFound) {
-		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
-		//		continue
-		//	}
-		wallets[event.Wallet] = wallet
-		//}
-		// === Database checks disabled ===
 
 		// Marshal the event
 		eventJson, err := json.Marshal(event)
 		if err != nil {
-			ctx.JSON(400, models.APIReturn{
-				StatusCode:   400,
-				Response:     "Failed to marshal req:" + err.Error(),
-				ResponseTime: time.Now().Unix(),
-			})
-			return
+			req.Events[i].Response.StatusCode = 400
+			req.Events[i].Response.ErrorDetails = "Failed to marshal req:" + err.Error()
+			continue
 		}
 
 		// Create Kafka message
@@ -92,7 +62,7 @@ func BalanceUpdate(ctx *gin.Context) {
 			Value: sarama.StringEncoder(eventJson),
 		}
 		messages = append(messages, message)
-		successfulEvents = append(successfulEvents, event)
+		req.Events[i].Response.StatusCode = 202
 	}
 
 	// Send messages to Kafka
@@ -107,20 +77,7 @@ func BalanceUpdate(ctx *gin.Context) {
 	}
 
 	// Return the response
-	if len(unsuccessfulEvents) > 0 {
-		ctx.JSON(207, models.APIEventReturn{
-			StatusCode:   207,
-			Success:      successfulEvents,
-			Unsuccess:    unsuccessfulEvents,
-			ResponseTime: time.Now().Unix(),
-		})
-		return
-	}
-
-	ctx.JSON(202, models.APIEventReturn{
-		StatusCode:   202,
-		Success:      successfulEvents,
-		Unsuccess:    unsuccessfulEvents,
-		ResponseTime: time.Now().Unix(),
+	ctx.JSON(202, models.EventList{
+		Events: req.Events,
 	})
 }
