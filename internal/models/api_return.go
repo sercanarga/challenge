@@ -15,3 +15,7 @@ type APIEventReturn struct {
 	Data   Event       `json:"data"`
 	Result EventResult `json:"result"`
 }
+
+type APIWalletsReturn struct {
+	Wallets []WalletStruct `json:"wallets"`
+}

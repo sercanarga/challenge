@@ -16,7 +16,6 @@ import (
 // @Produce		json
 // @Param		_		body		models.EventList	true "raw"
 // @Success		202		{object}	models.APIEventReturn
-// @Success		207		{object}	models.APIEventReturn
 // @Failure		500		{object}	models.APIReturn
 // @Router		/		[post]
 func BalanceUpdate(ctx *gin.Context) {

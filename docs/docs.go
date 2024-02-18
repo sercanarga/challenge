@@ -22,15 +22,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Returns a list of wallets.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "default:10",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "default:0",
+                        "name": "cursor",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIReturn"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.APIReturn"
                         }
@@ -63,22 +71,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "202": {
+                        "description": "Accepted",
                         "schema": {
                             "$ref": "#/definitions/models.APIEventReturn"
-                        }
-                    },
-                    "207": {
-                        "description": "Multi-Status",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIEventReturn"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIReturn"
                         }
                     },
                     "500": {
@@ -95,23 +91,11 @@ const docTemplate = `{
         "models.APIEventReturn": {
             "type": "object",
             "properties": {
-                "responseTime": {
-                    "type": "integer"
+                "data": {
+                    "$ref": "#/definitions/models.Event"
                 },
-                "statusCode": {
-                    "type": "integer"
-                },
-                "success": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
-                },
-                "unsuccess": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
+                "result": {
+                    "$ref": "#/definitions/models.EventResult"
                 }
             }
         },
@@ -129,17 +113,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Attributes": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                }
-            }
-        },
         "models.Event": {
             "type": "object",
             "properties": {
@@ -147,10 +120,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "attributes": {
-                    "$ref": "#/definitions/models.Attributes"
+                    "$ref": "#/definitions/models.EventAttributes"
                 },
                 "meta": {
-                    "$ref": "#/definitions/models.Meta"
+                    "$ref": "#/definitions/models.EventMeta"
                 },
                 "time": {
                     "type": "string"
@@ -159,6 +132,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wallet": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EventAttributes": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
                     "type": "string"
                 }
             }
@@ -174,11 +158,22 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Meta": {
+        "models.EventMeta": {
             "type": "object",
             "properties": {
                 "user": {
                     "type": "string"
+                }
+            }
+        },
+        "models.EventResult": {
+            "type": "object",
+            "properties": {
+                "errorDetails": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "integer"
                 }
             }
         }

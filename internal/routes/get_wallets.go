@@ -1,55 +1,53 @@
 package routes
 
 import (
-	"github.com/IBM/sarama"
+	"challenge/internal/durable"
+	"challenge/internal/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
-	"os"
+	"strconv"
+	"time"
 )
 
 // GetWallets
 // @Summary		Returns a list of wallets.
 // @Produce		json
+// @Param		limit		query		int		false	"default:10"
+// @Param		cursor		query		int		false	"default:0"
 // @Success		200		{object}	models.APIReturn
-// @Failure		400		{object}	models.APIReturn
 // @Failure		500		{object}	models.APIReturn
 // @Router		/		[get]
 func GetWallets(ctx *gin.Context) {
-	/*
-		@todo: change to use the database to get the wallets.
-			   currently returning the messages from kafka
-	*/
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+	cursor, _ := strconv.Atoi(ctx.DefaultQuery("cursor", "0"))
+	cursor = cursor * limit
 
-	config := sarama.NewConfig()
-	config.Consumer.Return.Errors = true
-
-	broker := os.Getenv("KAFKA_BROKER")
-	topic := os.Getenv("KAFKA_TOPIC")
-
-	consumer, err := sarama.NewConsumer([]string{broker}, config)
-	if err != nil {
-		log.Fatalln("Failed to start consumer:", err)
+	var wallets []models.Wallet
+	result := durable.Connection().Offset(cursor).Limit(limit).Find(&wallets)
+	if result.Error != nil {
+		ctx.JSON(500, models.APIReturn{
+			StatusCode:   500,
+			Response:     "Failed to retrieve wallets",
+			ResponseTime: time.Now().Unix(),
+		})
+		return
 	}
 
-	partitionConsumer, err := consumer.ConsumePartition(topic, 0, sarama.OffsetOldest)
-	if err != nil {
-		log.Fatalln("Failed to start partition consumer:", err)
+	var response []models.WalletStruct
+	for _, wallet := range wallets {
+		response = append(response, models.WalletStruct{
+			Id:     wallet.Id,
+			UserId: wallet.UserId,
+			Balances: []models.Balance{
+				{
+					Currency: wallet.Currency,
+					Amount:   fmt.Sprintf("%.2f", wallet.Amount),
+				},
+			},
+		})
 	}
 
-	messages := make([]string, 0)
-
-	for {
-		select {
-		case msg := <-partitionConsumer.Messages():
-			messages = append(messages, string(msg.Value))
-			if msg.Offset == partitionConsumer.HighWaterMarkOffset()-1 {
-				ctx.JSON(200, gin.H{
-					"messages": messages,
-				})
-				return
-			}
-		case err := <-partitionConsumer.Errors():
-			log.Fatalln("Failed to consume partition:", err)
-		}
-	}
+	ctx.JSON(200, models.APIWalletsReturn{
+		Wallets: response,
+	})
 }
