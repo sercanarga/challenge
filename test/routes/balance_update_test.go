@@ -3,6 +3,7 @@ package routes
 import (
 	"bytes"
 	"challenge/internal/models"
+	"challenge/internal/routes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -57,7 +58,7 @@ func TestBalanceUpdate(t *testing.T) {
 
 	t.Run("invalid request", func(t *testing.T) {
 		router := gin.Default()
-		router.POST("/", BalanceUpdate)
+		router.POST("/", routes.BalanceUpdate)
 
 		eventList := models.EventList{
 			Events: []models.Event{}, // Events alanı boş
