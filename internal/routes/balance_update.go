@@ -63,7 +63,7 @@ func BalanceUpdate(ctx *gin.Context) {
 		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
 		//		continue
 		//	}
-		//	users[event.Meta.User] = user
+		users[event.Meta.User] = user
 		//}
 		//if _, ok := wallets[event.Wallet]; !ok {
 		//	walletResult := durable.Connection().First(&wallet, "id = ? AND user_id = ?", event.Wallet, event.Meta.User)
@@ -71,11 +71,8 @@ func BalanceUpdate(ctx *gin.Context) {
 		//		unsuccessfulEvents = append(unsuccessfulEvents, event)
 		//		continue
 		//	}
-		//	wallets[event.Wallet] = wallet
-		//}
-
-		users[event.Meta.User] = user
 		wallets[event.Wallet] = wallet
+		//}
 		// === Database checks disabled ===
 
 		// Marshal the event
