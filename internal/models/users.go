@@ -10,6 +10,5 @@ type Users struct {
 	Name      string
 	Wallets   []Wallet  `gorm:"foreignKey:UserId"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt
 }
