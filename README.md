@@ -19,7 +19,7 @@ git clone https://github.com/sercanarga/challange.git
 cd challange
 ```
 3. edit the env file:
-```
+```env
 # General
 APP_NAME=challenge
 APP_PORT=8080
