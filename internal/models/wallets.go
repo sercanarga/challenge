@@ -29,9 +29,10 @@ type WalletStruct struct {
 }
 
 type Wallet struct {
-	Id      string    `gorm:"primaryKey;unique"`
-	UserId  string    `gorm:"foreignKey:Id;"`
-	Balance []Balance `gorm:"foreignKey:WalletId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Id        string    `gorm:"primaryKey;unique"`
+	UserId    string    `gorm:"foreignKey:Id;"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	Balance   []Balance `gorm:"foreignKey:WalletId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Balance struct {
