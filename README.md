@@ -108,9 +108,11 @@ curl -X 'POST' \
 }
 ```
 
-## Performance Tests
-vegeta was used for performance testing. The test was performed with 1000 requests per second for 30 seconds. The test results are as follows:
+## Performance & Security Tests
+AI-powered [deepsource](https://deepsource.com/) was used for security tests. The results are as follows.
+![test result](https://raw.githubusercontent.com/sercanarga/challenge/main/assets/deepsource.jpg?raw=true)
 
+vegeta was used for performance testing. The test was performed with 1000 requests per second for 30 seconds. The test results are as follows:
 ### [GET] /
 ```bash
 echo "GET http://localhost:8080/" | vegeta attack -rate=1000 -duration=30s | tee results.bin | vegeta report
@@ -124,6 +126,8 @@ Bytes Out     [total, mean]                     0, 0.00
 Success       [ratio]                           100.00%
 ```
 ![test result](https://raw.githubusercontent.com/sercanarga/challenge/main/assets/test_result.jpg?raw=true)
+
+---
 
 ### [POST] /
 ```bash
