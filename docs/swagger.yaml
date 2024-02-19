@@ -16,6 +16,19 @@ definitions:
       statusCode:
         type: integer
     type: object
+  models.Balance:
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+      id:
+        type: integer
+      lastUpdate:
+        type: string
+      wallet_id:
+        type: string
+    type: object
   models.Event:
     properties:
       app:
@@ -57,6 +70,17 @@ definitions:
       statusCode:
         type: integer
     type: object
+  models.WalletStruct:
+    properties:
+      balances:
+        items:
+          $ref: '#/definitions/models.Balance'
+        type: array
+      id:
+        type: string
+      user_id:
+        type: string
+    type: object
 info:
   contact: {}
   description: frontend service
@@ -79,7 +103,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIReturn'
+            $ref: '#/definitions/models.WalletStruct'
         "500":
           description: Internal Server Error
           schema:
