@@ -2,12 +2,18 @@ package main
 
 import (
 	"challenge/internal/durable"
+	"challenge/internal/models"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/IBM/sarama"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -146,7 +152,64 @@ func startPartitionConsumer(consumer sarama.Consumer, partition int32, msgs chan
 
 func processBatch(batch []*sarama.ConsumerMessage) {
 	for _, msg := range batch {
-		// print message
-		fmt.Println(string(msg.Value))
+		var event models.Event
+		var user models.Users
+		var wallet models.Wallet
+		var balance models.Balance
+
+		err := json.Unmarshal(msg.Value, &event)
+		if err != nil {
+			log.Printf("Error parsing JSON: %v\n", err)
+			continue
+		}
+
+		// check if user exists
+		userResult := durable.Connection().First(&user, "id = ? AND deleted_at IS NULL", event.Meta.User)
+		if errors.Is(userResult.Error, gorm.ErrRecordNotFound) {
+			log.Println("User not found or deleted")
+			continue
+		}
+
+		// check if wallet exists
+		walletResult := durable.Connection().First(&wallet, "id = ? AND user_id = ?", event.Wallet, event.Meta.User)
+		if errors.Is(walletResult.Error, gorm.ErrRecordNotFound) {
+			log.Println("Wallet not found or wallet not belongs to user")
+			continue
+		}
+
+		eventAmount, err := strconv.ParseFloat(event.Attributes.Amount, 64)
+		if err != nil {
+			log.Printf("Error parsing amount: %v\n", err)
+			continue
+		}
+
+		// check if balance exists and update or create
+		BalanceResult := durable.Connection().First(&balance, "wallet_id = ? AND currency = ?", event.Wallet, event.Attributes.Currency)
+		if errors.Is(BalanceResult.Error, gorm.ErrRecordNotFound) {
+			// wallet does not exist, create a new one
+			balance = models.Balance{
+				WalletId: event.Wallet,
+				Currency: event.Attributes.Currency,
+				Amount:   eventAmount,
+			}
+		} else {
+			switch event.Type {
+			case "BALANCE_INCREASE":
+				balance.Amount += eventAmount
+			case "BALANCE_DECREASE":
+				balance.Amount -= eventAmount
+			}
+		}
+		balance.LastUpdate = time.Now()
+
+		result := durable.Connection().Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "currency"}, {Name: "wallet_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"amount", "last_update"}),
+		}).Create(&balance)
+
+		if result.Error != nil {
+			log.Printf("Error updating or creating wallet: %v\n", result.Error)
+			continue
+		}
 	}
 }

@@ -2,10 +2,25 @@ package models
 
 import "time"
 
-type Balance struct {
-	Currency string `json:"currency"`
-	Amount   string `json:"amount"`
-}
+//type WalletStruct struct {
+//	Id       string    `json:"id"`
+//	UserId   string    `json:"user_id"`
+//	Balances []Balance `json:"balances"`
+//}
+//
+//type Wallet struct {
+//	Id      string    `gorm:"primaryKey;unique"`
+//	UserId  string    `gorm:"foreignKey:Id;"`
+//	Balance []Balance `gorm:"foreignKey:WalletId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+//}
+//
+//type Balance struct {
+//	Id         uint      `gorm:"primaryKey;autoIncrement;unique"`
+//	WalletId   string    `gorm:"foreignKey:Id;uniqueIndex:idx_wallet_currency"`
+//	Currency   string    `gorm:"uniqueIndex:idx_wallet_currency"`
+//	Amount     float64   `gorm:"type:decimal(10,2)"`
+//	LastUpdate time.Time `gorm:"autoUpdateTime"`
+//}
 
 type WalletStruct struct {
 	Id       string    `json:"id"`
@@ -14,16 +29,15 @@ type WalletStruct struct {
 }
 
 type Wallet struct {
-	Id          string    `gorm:"primaryKey;unique"`
-	UserId      string    `gorm:"foreignKey:Id"`
-	Currency    string    `gorm:"primaryKey;unique"`
-	Amount      float64   `gorm:"default:0;type:numeric(8,2)"`
-	LastUpdated time.Time `gorm:"autoUpdateTime"`
-
-	//CurrencyId  uint      `gorm:"foreignKey:Currency"`
+	Id      string    `gorm:"primaryKey;unique"`
+	UserId  string    `gorm:"foreignKey:Id;"`
+	Balance []Balance `gorm:"foreignKey:WalletId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-//type Currency struct {
-//	Id   string `gorm:"primaryKey;unique"`
-//	Name string
-//}
+type Balance struct {
+	Id         uint      `gorm:"primaryKey;autoIncrement;unique" json:"id,omitempty"`
+	WalletId   string    `gorm:"foreignKey:Id;uniqueIndex:idx_wallet_currency" json:"wallet_id,omitempty"`
+	Currency   string    `gorm:"uniqueIndex:idx_wallet_currency" json:"currency,omitempty"`
+	Amount     float64   `gorm:"type:decimal(10,2)"`
+	LastUpdate time.Time `gorm:"autoUpdateTime"`
+}
