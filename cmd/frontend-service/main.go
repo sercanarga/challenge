@@ -6,7 +6,6 @@ import (
 	"challenge/internal/models"
 	"challenge/internal/routes"
 	"flag"
-	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -70,14 +69,6 @@ func main() {
 		ExposeHeaders: []string{"*"},
 		MaxAge:        12 * time.Hour,
 	}))
-
-	// prometheus metrics
-	p := ginprom.New(
-		ginprom.Engine(app),
-		ginprom.Subsystem("gin"),
-		ginprom.Path("/metrics"),
-	)
-	app.Use(p.Instrument())
 
 	// swagger routes
 	docs.SwaggerInfo.Title = os.Getenv("APP_NAME")
