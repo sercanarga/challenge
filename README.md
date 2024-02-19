@@ -57,15 +57,21 @@ curl -X 'GET' \
 #### Response:
 ```json
 {
-  "balances": [
+  "wallets": [
     {
-      "amount": 0,
-      "currency": "string",
-      "lastUpdate": "string"
+      "id": "1",
+      "user_id": "1",
+      "balances": [
+        {
+          "currency": "TRY",
+          "Amount": 30,
+          "LastUpdate": "2024-02-19T22:34:08.125Z"
+        }
+        ...
+      ]
     }
-  ],
-  "id": "string",
-  "user_id": "string"
+    ...
+  ]
 }
 ```
 ### [POST] /
