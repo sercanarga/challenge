@@ -81,6 +81,9 @@ func main() {
 	// swagger routes
 	docs.SwaggerInfo.Title = os.Getenv("APP_NAME")
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	app.GET("/doc", func(c *gin.Context) {
+		c.Redirect(301, "/docs/index.html")
+	})
 
 	// routes
 	app.POST("/", routes.BalanceUpdate)
