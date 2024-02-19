@@ -51,6 +51,7 @@ func main() {
 	if err := durable.Connection().AutoMigrate(
 		&models.Users{},
 		&models.Wallet{},
+		&models.Balance{},
 	); err != nil {
 		log.Fatal(err)
 	}
