@@ -61,7 +61,7 @@ func TestBalanceUpdate(t *testing.T) {
 		router.POST("/", routes.BalanceUpdate)
 
 		eventList := models.EventList{
-			Events: []models.Event{}, // Events alanı boş
+			Events: []models.Event{}, // Events field null
 		}
 
 		jsonData, err := json.Marshal(eventList)
