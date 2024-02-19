@@ -26,11 +26,11 @@ func TestBalanceUpdate(t *testing.T) {
 					App:  "01HPMTX8916FF4ABFBDESX1AGH",
 					Type: "BALANCE_INCREASE",
 					Time: "2024-02-12T11:50:40.280Z",
-					Meta: models.Meta{
+					Meta: models.EventMeta{
 						User: "01HPMV114ZE7Z54M6XV8H4EEMB",
 					},
 					Wallet: "01HPMV01XPAXCG242W7SZWD0S5",
-					Attributes: models.Attributes{
+					Attributes: models.EventAttributes{
 						Amount:   "33.20",
 						Currency: "TRY",
 					},
