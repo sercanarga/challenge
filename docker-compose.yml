@@ -20,6 +20,21 @@ services:
     expose:
       - 8080
 
+  # Worker service
+  worker-service:
+    build:
+      context: .
+      dockerfile: ./cmd/worker-service/Dockerfile
+    deploy:
+      replicas: 1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - service-network
+
   # Kafka service
   kafka:
     image: &kafka-img confluentinc/cp-kafka:latest
