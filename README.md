@@ -1,6 +1,8 @@
 # Challenge
 This project is an API service developed in Go. Designed to work under high traffic and used to decrease, increase and query the balance value of existing users.
 
+![last commit](https://badgen.net/github/last-commit/sercanarga/challenge) ![license](https://badgen.net/github/license/sercanarga/challenge)
+
 ## Features
 - It is developed in Go language.
 - Redis database used.
