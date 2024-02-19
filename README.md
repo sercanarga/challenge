@@ -1,5 +1,5 @@
 # Challenge
-This project is an API service developed in Go and Redis languages, designed to work under high traffic and used to decrease, increase and query the balance value of existing users.
+This project is an API service developed in Go. Designed to work under high traffic and used to decrease, increase and query the balance value of existing users.
 
 ## Features
 - It is developed in Go language.
