@@ -14,11 +14,11 @@ This project is an API service developed in Go. Designed to work under high traf
 ## Installation
 1. Clone the project:
 ```
-git clone https://github.com/sercanarga/challange.git
+git clone https://github.com/sercanarga/challenge.git
 ```
 2. Go to the project directory:
 ```
-cd challange
+cd challenge
 ```
 3. edit the env file:
 ```env
