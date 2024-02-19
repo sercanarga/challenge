@@ -115,7 +115,7 @@ curl -X 'POST' \
 ```
 
 ## Database Diagram
-![database diagram](https://raw.githubusercontent.com/sercanarga/challenge/main/assets/database_diagram.jpg?raw=true)
+![database diagram](https://raw.githubusercontent.com/sercanarga/challenge/main/assets/new_database_diagram.jpg?raw=true)
 
 ## Performance & Security Tests
 AI-powered [deepsource](https://deepsource.com/) was used for security tests. The results are as follows.
