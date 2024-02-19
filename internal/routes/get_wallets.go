@@ -49,5 +49,7 @@ func GetWallets(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(200, responseWallets)
+	ctx.JSON(200, gin.H{
+		"wallets": responseWallets,
+	})
 }
